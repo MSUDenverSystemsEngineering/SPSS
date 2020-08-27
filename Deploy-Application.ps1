@@ -147,7 +147,7 @@ Try {
 		}
 
 		## <Perform Installation tasks here>
-		$installParameters = "LICENSETYPE=`"Network`" LSHOST=`"vmwas22.winad.msudenver.edu`""
+		$installParameters = "LICENSETYPE=`"Network`" LSHOST=`"vmwas32.winad.msudenver.edu`""
 		$exitCode = Execute-MSI -Action "Install" -Path "IBM SPSS Statistics 27.msi" -Transform "1033.MST" -Parameters "REBOOT=ReallySupress /QN INSTALLPYTHON=`"1`" COMPANYNAME=`"Metropolitan State University of Denver`" $installParameters" -SecureParameters -PassThru
 
 
