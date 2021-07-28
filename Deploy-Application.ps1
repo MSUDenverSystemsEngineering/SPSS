@@ -67,12 +67,12 @@ Try {
 	## Variables: Application
 	[string]$appVendor = 'IBM'
 	[string]$appName = 'SPSS'
-	[string]$appVersion = '27'
+	[string]$appVersion = '28'
 	[string]$appArch = 'x64'
 	[string]$appLang = 'EN'
 	[string]$appRevision = '01'
 	[string]$appScriptVersion = '1.0.0'
-	[string]$appScriptDate = '08/27/2020'
+	[string]$appScriptDate = '07/27/2021'
 	[string]$appScriptAuthor = 'James Hardy'
 	##*===============================================
 	## Variables: Install Titles (Only set here to override defaults set by the toolkit)
@@ -127,13 +127,10 @@ Try {
 		Show-InstallationProgress
 
 		## <Perform Pre-Installation tasks here>
-		$productCodes = @("{8EAD21F8-AD8B-4C6F-ABE6-92357CAB043E}","{1AC22BAE-DC13-4991-9910-AE3743A4592D}","{C2D1E17D-CB8A-4742-84FA-1DB5C6A1ABDD}")
-		Foreach ($productCode in $productCodes) {
-			$exitCode = Execute-MSI -Action "Uninstall" -Path "$productCode" -AddParameters "ALLUSERS=1 REMOVE=`"ALL`"" -PassThru
-			}
-			If (($exitCode.ExitCode -ne "0") -and ($mainExitCode -ne "3010")) {
-				$mainExitCode = $exitCode.ExitCode
-			}
+		Remove-MSIApplications -Name "SPSS Statistics"
+
+		##SPSS Stats 27 GUID {8EAD21F8-AD8B-4C6F-ABE6-92357CAB043E}
+		##SPSS Stats 28 GUID {DC8AD675-36E2-44AD-8FB9-FA069BEAC190}
 
 		##*===============================================
 		##* INSTALLATION
@@ -148,7 +145,7 @@ Try {
 
 		## <Perform Installation tasks here>
 		$installParameters = "LICENSETYPE=`"Network`" LSHOST=`"vmwas32.winad.msudenver.edu`""
-		$exitCode = Execute-MSI -Action "Install" -Path "IBM SPSS Statistics 27.msi" -Transform "1033.MST" -Parameters "REBOOT=ReallySupress /QN INSTALLPYTHON=`"1`" COMPANYNAME=`"Metropolitan State University of Denver`" $installParameters" -SecureParameters -PassThru
+		$exitCode = Execute-MSI -Action "Install" -Path "IBM SPSS Statistics 28.msi" -Transform "1033.MST" -Parameters "REBOOT=ReallySupress /QN INSTALLPYTHON=`"1`" COMPANYNAME=`"Metropolitan State University of Denver`" $installParameters" -SecureParameters -PassThru
 
 
 		##*===============================================
@@ -171,16 +168,12 @@ Try {
 		[string]$installPhase = 'Pre-Uninstallation'
 
 		## Show Welcome Message, close Internet Explorer with a 60 second countdown before automatically closing
-		Show-InstallationWelcome -CloseApps 'stats' -CloseAppsCountdown 60
+		Show-InstallationWelcome -CloseApps 'stats,spss' -CloseAppsCountdown 60
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
 
 		## <Perform Pre-Uninstallation tasks here>
-		$exitCode = Execute-MSI -Action "Uninstall" -Path "{8EAD21F8-AD8B-4C6F-ABE6-92357CAB043E}" -AddParameters "ALLUSERS=1 REMOVE=`"ALL`"" -PassThru
-		If (($exitCode.ExitCode -ne "0") -and ($mainExitCode -ne "3010")) {
-			$mainExitCode = $exitCode.ExitCode
-		}
 
 
 		##*===============================================
@@ -195,7 +188,8 @@ Try {
 		}
 
 		# <Perform Uninstallation tasks here>
-
+		$exitCode = Execute-MSI -Action "Uninstall" -Path "{DC8AD675-36E2-44AD-8FB9-FA069BEAC190}" -AddParameters "ALLUSERS=1 REMOVE=`"ALL`"" -PassThru
+		If (($exitCode.ExitCode -ne "0") -and ($mainExitCode -ne "3010")) { $mainExitCode = $exitCode.ExitCode }
 
 		##*===============================================
 		##* POST-UNINSTALLATION
